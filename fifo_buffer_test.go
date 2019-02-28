@@ -5,114 +5,114 @@ import (
 	"testing"
 )
 
-func TestCapacityFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	assert.Equal(t, 10, fifoStack.Cap())
+func TestCapacityFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	assert.Equal(t, 10, fifoBuffer.Cap())
 
-	fifoStack.Append("test1")
-	assert.Equal(t, 10, fifoStack.Cap())
-
-	for i := 0; i < 20; i++ {
-		fifoStack.Append("test")
-	}
-	assert.Equal(t, 10, fifoStack.Cap())
-}
-
-func TestLengthFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	assert.Equal(t, 0, fifoStack.Len())
-
-	fifoStack.Append("test1")
-	assert.Equal(t, 1, fifoStack.Len())
+	fifoBuffer.Append("test1")
+	assert.Equal(t, 10, fifoBuffer.Cap())
 
 	for i := 0; i < 20; i++ {
-		fifoStack.Append("test")
-		assert.LessOrEqual(t, fifoStack.Len(), 10)
+		fifoBuffer.Append("test")
 	}
-	assert.Equal(t, 10, fifoStack.Len())
+	assert.Equal(t, 10, fifoBuffer.Cap())
 }
 
-func TestAppendElementInFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	fifoStack.Append("test1")
-	fifoStack.Append("test2")
+func TestLengthFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	assert.Equal(t, 0, fifoBuffer.Len())
 
-	assert.Equal(t, []interface{}{"test1", "test2"}, fifoStack.GetItems())
-}
-
-func TestGetLastElementFromFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	fifoStack.Append("test1")
-	fifoStack.Append("test2")
-	fifoStack.Append("test3")
-	fifoStack.Append("test4")
-
-	assert.Equal(t, "test4", fifoStack.Last())
-}
-
-func TestShiftElementFromFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	fifoStack.Append("test1")
-	fifoStack.Append("test2")
-	fifoStack.Append("test3")
-	fifoStack.Append("test4")
-
-	fifoStack.Shift()
-	assert.Equal(t, []interface{}{"test2", "test3", "test4"}, fifoStack.GetItems())
-	assert.Equal(t, 3, fifoStack.Len())
-	assert.Equal(t, 10, fifoStack.Cap())
-}
-
-func TestIfFullFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	fifoStack.Append("test1")
-	fifoStack.Append("test2")
-	fifoStack.Append("test3")
-	fifoStack.Append("test4")
-
-	assert.Equal(t, false, fifoStack.Full())
+	fifoBuffer.Append("test1")
+	assert.Equal(t, 1, fifoBuffer.Len())
 
 	for i := 0; i < 20; i++ {
-		fifoStack.Append("test")
+		fifoBuffer.Append("test")
+		assert.LessOrEqual(t, fifoBuffer.Len(), 10)
 	}
-	assert.Equal(t, true, fifoStack.Full())
+	assert.Equal(t, 10, fifoBuffer.Len())
 }
 
-func TestIfEmptyFifoStack(t *testing.T) {
-	fifoStack := NewFifoStack(10)
-	assert.Equal(t, true, fifoStack.Empty())
+func TestAppendElementInFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
 
-	fifoStack.Append("test")
-	assert.Equal(t, false, fifoStack.Empty())
+	assert.Equal(t, []interface{}{"test1", "test2"}, fifoBuffer.GetItems())
 }
 
-func BenchmarkAppendElementInFifoStack(b *testing.B) {
-	fifoStack := NewFifoStack(100)
+func TestGetLastElementFromFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
+	fifoBuffer.Append("test4")
+
+	assert.Equal(t, "test4", fifoBuffer.Last())
+}
+
+func TestShiftElementFromFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
+	fifoBuffer.Append("test4")
+
+	fifoBuffer.Shift()
+	assert.Equal(t, []interface{}{"test2", "test3", "test4"}, fifoBuffer.GetItems())
+	assert.Equal(t, 3, fifoBuffer.Len())
+	assert.Equal(t, 10, fifoBuffer.Cap())
+}
+
+func TestIfFullFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
+	fifoBuffer.Append("test4")
+
+	assert.Equal(t, false, fifoBuffer.Full())
+
+	for i := 0; i < 20; i++ {
+		fifoBuffer.Append("test")
+	}
+	assert.Equal(t, true, fifoBuffer.Full())
+}
+
+func TestIfEmptyFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	assert.Equal(t, true, fifoBuffer.Empty())
+
+	fifoBuffer.Append("test")
+	assert.Equal(t, false, fifoBuffer.Empty())
+}
+
+func BenchmarkAppendElementInFifoBuffer(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
 
 	for i := 0; i < b.N; i++ {
-		fifoStack.Append("test1")
+		fifoBuffer.Append("test1")
 	}
 }
 
-func BenchmarkAppendElementInFullFifoStack(b *testing.B) {
-	fifoStack := NewFifoStack(100)
+func BenchmarkAppendElementInFullFifoBuffer(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
 
 	for i := 0; i < 100; i++ {
-		fifoStack.Append("test")
+		fifoBuffer.Append("test")
 	}
 
 	for i := 0; i < b.N; i++ {
-		fifoStack.Append("test1")
+		fifoBuffer.Append("test1")
 	}
 }
 
-func BenchmarkGetLastElementFromFifoStack(b *testing.B) {
-	fifoStack := NewFifoStack(100)
-	fifoStack.Append("test1")
-	fifoStack.Append("test2")
-	fifoStack.Append("test3")
+func BenchmarkGetLastElementFromFifoBuffer(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
 
 	for i := 0; i < b.N; i++ {
-		fifoStack.Last()
+		fifoBuffer.Last()
 	}
 }
