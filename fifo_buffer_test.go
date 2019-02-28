@@ -1,4 +1,4 @@
-package fifo_buffer
+package buffer
 
 import (
 	"github.com/stretchr/testify/assert"

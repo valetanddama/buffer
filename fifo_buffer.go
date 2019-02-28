@@ -1,4 +1,4 @@
-package fifo_buffer
+package buffer
 
 import "sync"
 
