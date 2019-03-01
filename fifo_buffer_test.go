@@ -5,19 +5,6 @@ import (
 	"testing"
 )
 
-func TestCapacityFifoBuffer(t *testing.T) {
-	fifoBuffer := NewFifoBuffer(10)
-	assert.Equal(t, 10, fifoBuffer.Cap())
-
-	fifoBuffer.Append("test1")
-	assert.Equal(t, 10, fifoBuffer.Cap())
-
-	for i := 0; i < 20; i++ {
-		fifoBuffer.Append("test")
-	}
-	assert.Equal(t, 10, fifoBuffer.Cap())
-}
-
 func TestLengthFifoBuffer(t *testing.T) {
 	fifoBuffer := NewFifoBuffer(10)
 	assert.Equal(t, 0, fifoBuffer.Len())
@@ -60,7 +47,6 @@ func TestShiftElementFromFifoBuffer(t *testing.T) {
 	fifoBuffer.Shift()
 	assert.Equal(t, []interface{}{"test2", "test3", "test4"}, fifoBuffer.GetItems())
 	assert.Equal(t, 3, fifoBuffer.Len())
-	assert.Equal(t, 10, fifoBuffer.Cap())
 }
 
 func TestIfFullFifoBuffer(t *testing.T) {
@@ -114,5 +100,16 @@ func BenchmarkGetLastElementFromFifoBuffer(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		fifoBuffer.Last()
+	}
+}
+
+func BenchmarkGetItemsFromFifoBuffer(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
+	for i := 0; i < 100; i++ {
+		fifoBuffer.Append("test")
+	}
+
+	for i := 0; i < b.N; i++ {
+		fifoBuffer.GetItems()
 	}
 }

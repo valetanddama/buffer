@@ -1,36 +1,41 @@
 package buffer
 
-import "sync"
+import (
+	"container/list"
+	"sync"
+)
 
 type FifoBuffer struct {
 	sync.RWMutex
-	items []interface{}
+	items *list.List
+	cap   int
 }
 
 func NewFifoBuffer(cap int) *FifoBuffer {
-	return &FifoBuffer{items: make([]interface{}, 0, cap)}
+	return &FifoBuffer{items: list.New(), cap: cap}
 }
 
 func (s *FifoBuffer) Last() interface{} {
 	s.RLock()
 	defer s.RUnlock()
 
-	if s.Len() == 0 {
+	if s.Empty() {
 		return nil
 	}
-	return s.items[s.Len()-1]
+	return s.items.Back().Value
 }
 
 func (s *FifoBuffer) Append(item interface{}) {
 	s.Lock()
 	defer s.Unlock()
 
-	if s.Len() == s.Cap() {
+	if s.Full() {
 		s.Unlock()
 		s.Shift()
 		s.Lock()
 	}
-	s.items = append(s.items, item)
+
+	s.items.PushBack(item)
 }
 
 func (s *FifoBuffer) Shift() {
@@ -41,14 +46,13 @@ func (s *FifoBuffer) Shift() {
 		return
 	}
 
-	items := make([]interface{}, s.Len()-1, s.Cap())
-	copy(items, s.items[1:])
-
-	s.items = items
+	if firstContainerItem := s.items.Front(); firstContainerItem != nil {
+		s.items.Remove(firstContainerItem)
+	}
 }
 
 func (s *FifoBuffer) Full() bool {
-	return s.Len() == s.Cap()
+	return s.Len() == s.cap
 }
 
 func (s *FifoBuffer) Empty() bool {
@@ -56,13 +60,18 @@ func (s *FifoBuffer) Empty() bool {
 }
 
 func (s *FifoBuffer) GetItems() []interface{} {
-	return s.items
+	s.RLock()
+	defer s.RUnlock()
+
+	items := make([]interface{}, 0, s.items.Len())
+
+	for item := s.items.Front(); item != nil; item = item.Next() {
+		items = append(items, item.Value)
+	}
+
+	return items
 }
 
 func (s *FifoBuffer) Len() int {
-	return len(s.items)
-}
-
-func (s *FifoBuffer) Cap() int {
-	return cap(s.items)
+	return s.items.Len()
 }
