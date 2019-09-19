@@ -15,6 +15,16 @@ func NewFifoBuffer(cap int) *FifoBuffer {
 	return &FifoBuffer{items: list.New(), cap: cap}
 }
 
+func (s *FifoBuffer) First() interface{} {
+	s.RLock()
+	defer s.RUnlock()
+
+	if s.Empty() {
+		return nil
+	}
+	return s.items.Front().Value
+}
+
 func (s *FifoBuffer) Last() interface{} {
 	s.RLock()
 	defer s.RUnlock()

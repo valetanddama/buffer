@@ -1,8 +1,9 @@
 package buffer
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLengthFifoBuffer(t *testing.T) {
@@ -27,6 +28,17 @@ func TestAppendElementInFifoBuffer(t *testing.T) {
 	assert.Equal(t, []interface{}{"test1", "test2"}, fifoBuffer.GetItems())
 }
 
+func TestGetFirstElementFromFifoBuffer(t *testing.T) {
+	fifoBuffer := NewFifoBuffer(10)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
+	fifoBuffer.Append("test4")
+
+	assert.Equal(t, "test1", fifoBuffer.First())
+	assert.Equal(t, 4, fifoBuffer.Len())
+}
+
 func TestGetLastElementFromFifoBuffer(t *testing.T) {
 	fifoBuffer := NewFifoBuffer(10)
 	fifoBuffer.Append("test1")
@@ -35,6 +47,7 @@ func TestGetLastElementFromFifoBuffer(t *testing.T) {
 	fifoBuffer.Append("test4")
 
 	assert.Equal(t, "test4", fifoBuffer.Last())
+	assert.Equal(t, 4, fifoBuffer.Len())
 }
 
 func TestShiftElementFromFifoBuffer(t *testing.T) {
@@ -89,6 +102,17 @@ func BenchmarkAppendElementInFullFifoBuffer(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		fifoBuffer.Append("test1")
+	}
+}
+
+func BenchmarkGetFirstElementFromFifoBuffer(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
+	fifoBuffer.Append("test1")
+	fifoBuffer.Append("test2")
+	fifoBuffer.Append("test3")
+
+	for i := 0; i < b.N; i++ {
+		fifoBuffer.First()
 	}
 }
 
