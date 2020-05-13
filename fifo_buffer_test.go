@@ -85,6 +85,23 @@ func TestIfEmptyFifoBuffer(t *testing.T) {
 	assert.Equal(t, false, fifoBuffer.Empty())
 }
 
+func TestCapOfFifoBuffer(t *testing.T) {
+	{
+		fifoBuffer := NewFifoBuffer(10)
+		assert.Equal(t, 10, fifoBuffer.Cap())
+	}
+
+	{
+		fifoBuffer := NewFifoBuffer(5)
+		assert.Equal(t, 5, fifoBuffer.Cap())
+	}
+
+	{
+		fifoBuffer := NewFifoBuffer(100)
+		assert.Equal(t, 100, fifoBuffer.Cap())
+	}
+}
+
 func BenchmarkAppendElementInFifoBuffer(b *testing.B) {
 	fifoBuffer := NewFifoBuffer(100)
 
@@ -135,5 +152,12 @@ func BenchmarkGetItemsFromFifoBuffer(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		fifoBuffer.GetItems()
+	}
+}
+
+func BenchmarkFifoBufferCap(b *testing.B) {
+	fifoBuffer := NewFifoBuffer(100)
+	for i := 0; i < 100; i++ {
+		fifoBuffer.Cap()
 	}
 }

@@ -85,3 +85,7 @@ func (s *FifoBuffer) GetItems() []interface{} {
 func (s *FifoBuffer) Len() int {
 	return s.items.Len()
 }
+
+func (s *FifoBuffer) Cap() int {
+	return s.cap
+}
